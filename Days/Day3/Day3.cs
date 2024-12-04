@@ -9,7 +9,7 @@ public class Day3
         var filePath = "Days/Day3/Day3Input.txt";
         
         var mulList = new List<string>();
-        var pattern = @"^mul\((-?\d+),(-?\d+)\)$";
+        var pattern = @"^mul\((-?\d+),(-?\d+)\)$"; // chatgpt made the regex pattern
 
         if (File.Exists(filePath))
         {
