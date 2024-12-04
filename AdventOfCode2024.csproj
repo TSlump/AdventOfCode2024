@@ -29,6 +29,9 @@
       <None Update="Days\Day4\Day4TestInput2.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
+      <None Update="Days\Day4\Day4TestInput3.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

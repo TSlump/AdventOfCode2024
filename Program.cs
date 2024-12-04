@@ -16,4 +16,5 @@ Day3.RunPartOne();
 Day3.RunPartTwo();
 
 Console.WriteLine("\nDay 4\n");
-Day4.Run();
+Day4.RunPartOne();
+Day4.RunPartTwo();
