@@ -8,14 +8,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3ab70836-6a92-42d7-885a-cc4296e77e7a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Days/Day11/Day11.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Days/Day11/Day11Input.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Days/Day11/Day11TestInput.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Days/Day12/Day12.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Days/Day12/Day12Input.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Days/Day12/Day12TestInput.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.AdventOfCode2024/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.AdventOfCode2024/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AdventOfCode2024.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/AdventOfCode2024.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Days/Day13/Day13.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Days/Day13/Day13.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Program.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -60,6 +54,7 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -97,6 +92,8 @@
       <workItem from="1733392707958" duration="3403000" />
       <workItem from="1733825881645" duration="3751000" />
       <workItem from="1733906448275" duration="18351000" />
+      <workItem from="1734011050148" duration="13261000" />
+      <workItem from="1734087165229" duration="6456000" />
     </task>
     <servers />
   </component>

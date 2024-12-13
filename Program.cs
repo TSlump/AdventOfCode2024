@@ -41,4 +41,5 @@ Console.WriteLine("\nDay 12\n");
 //Day12.Run();
 
 Console.WriteLine("\nDay 13\n");
-Day13.Run();
+Day13.RunPartOne();
+Day13.RunPartTwo();
