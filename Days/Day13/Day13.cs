@@ -73,19 +73,20 @@ public class Day13
             {
                Console.WriteLine($"{APresses}, {prize.Item1 / game.buttons.b.Item1}");
                totalTokens += 3 * APresses + Convert.ToInt32(prize.Item1 / game.buttons.b.Item1); 
+               
+               
+               
+               Console.WriteLine($"Prize: ({game.prize.Item1}, {game.prize.Item2}): A Presses: {APresses}, B Presses: {prize.Item1 / game.buttons.b.Item1}");
             }
         }
         
         Console.WriteLine($"Total tokens: {totalTokens}");
-
-        
-        
     }
 
 
     public static void RunPartTwo()
     {
-        var filePath = "Days/Day13/Day13TestInput.txt";
+        var filePath = "Days/Day13/Day13TestInput2.txt";
         string[] input = [];
 
         if (File.Exists(filePath))
@@ -97,32 +98,23 @@ public class Day13
             Console.WriteLine("File not found");
         }
 
-        var games = new List<((double, double) prize, ((int, int) a, (int, int) b) buttons)>();
+        var games = new List<((long, long) prize, ((long, long) a, (long, long) b) buttons)>();
 
         for (var i = 0; i < (input.Length + 1) / 4; i++)
         {
             var splitA = input[4 * i].Split('+');
-            var a = (int.Parse(splitA[1].Split(',')[0]), int.Parse(splitA[2]));
+            var a = (Convert.ToInt64(splitA[1].Split(',')[0]), Convert.ToInt64(splitA[2]));
 
             var splitB = input[4 * i + 1].Split('+');
-            var b = (int.Parse(splitB[1].Split(',')[0]), int.Parse(splitB[2]));
+            var b = (Convert.ToInt64(splitB[1].Split(',')[0]), Convert.ToInt64(splitB[2]));
 
             var splitPrize = input[4 * i + 2].Split('=');
-            // var prize = (Convert.ToDouble(splitPrize[1].Split(',')[0]) + 10000000000000,
-            //     Convert.ToDouble(splitPrize[2]) + 10000000000000);
-            var prize = (Convert.ToDouble(splitPrize[1].Split(',')[0]),
-                Convert.ToDouble(splitPrize[2]));
+            var prize = (Convert.ToInt64(splitPrize[1].Split(',')[0]) + 10000000000000,
+                Convert.ToInt64(splitPrize[2]) + 10000000000000);
+            // var prize = (Convert.ToInt64(splitPrize[1].Split(',')[0]),
+            //     Convert.ToInt64(splitPrize[2]));
 
             games.Add((prize, (a, b)));
-        }
-
-        foreach (var game in games)
-        {
-            Console.WriteLine($"Prize: ({game.prize.Item1}, {game.prize.Item2})");
-            Console.WriteLine($"  Buttons:");
-            Console.WriteLine($"    A: ({game.buttons.a.Item1}, {game.buttons.a.Item2})");
-            Console.WriteLine($"    B: ({game.buttons.b.Item1}, {game.buttons.b.Item2})");
-            Console.WriteLine();
         }
         
         Console.WriteLine();
@@ -131,7 +123,7 @@ public class Day13
         var APresses = 0.0;
         var BPresses = 0.0;
 
-        var totalTokens2 = 0.0;
+        long totalTokens2 = 0;
 
         foreach (var game2 in games)
         {
@@ -153,14 +145,14 @@ public class Day13
                 var d = extended_euclidean(game2.buttons.a.Item1, game2.buttons.b.Item1);
                 Console.WriteLine($"Initial inverse: x: {d.Item2}, y: {d.Item3}, d: {d.Item1}");
 
-                d.Item2 *= game2.prize.Item1 / GCD(game2.buttons.a.Item1, game2.buttons.b.Item1);
-                d.Item3 *= game2.prize.Item1 / GCD(game2.buttons.a.Item1, game2.buttons.b.Item1);
+                d.Item2 *= (long) (game2.prize.Item1 / GCD(game2.buttons.a.Item1, game2.buttons.b.Item1));
+                d.Item3 *= (long) (game2.prize.Item1 / GCD(game2.buttons.a.Item1, game2.buttons.b.Item1));
 
                 Console.WriteLine($"Adjusted for price: x: {d.Item2}, y: {d.Item3}, d: {d.Item1}");
 
                 if (d.Item3 < 0)
                 {
-                    var adjuster = Math.Ceiling(-d.Item3 / game2.buttons.a.Item1);
+                    var adjuster = (long) Math.Ceiling((double)(-d.Item3 / game2.buttons.a.Item1));
 
                     d.Item3 += game2.buttons.a.Item1 * adjuster;
                     d.Item2 -= game2.buttons.b.Item1 * adjuster;
@@ -168,7 +160,7 @@ public class Day13
 
                 if (d.Item2 < 0)
                 {
-                    var adjuster = Math.Ceiling(-d.Item2 / game2.buttons.b.Item1);
+                    var adjuster = (long)Math.Ceiling((double)(-d.Item2 / game2.buttons.b.Item1));
 
                     d.Item2 += game2.buttons.b.Item1 * adjuster;
                     d.Item3 -= game2.buttons.a.Item1 * adjuster;
@@ -176,9 +168,9 @@ public class Day13
 
                 Console.WriteLine($"Made positive: x: {d.Item2}, y: {d.Item3}, d: {d.Item1}");
 
-                var reducer = Math.Floor(d.Item2 / Math.Max(game2.buttons.b.Item1, game2.buttons.a.Item1));
-                d.Item2 -= game2.buttons.a.Item1 * reducer;
-                d.Item3 += game2.buttons.b.Item1 * reducer;
+                long reducer = (long)Math.Floor(d.Item2 / (game2.buttons.b.Item1 / GCD(game2.buttons.a.Item1, game2.buttons.b.Item1)));
+                d.Item2 -= (long)(game2.buttons.b.Item1 / GCD(game2.buttons.a.Item1, game2.buttons.b.Item1)) * reducer;
+                d.Item3 += (long)(game2.buttons.a.Item1 / GCD(game2.buttons.a.Item1, game2.buttons.b.Item1)) * reducer;
 
                 Console.WriteLine($"Reduced A: x: {d.Item2}, y: {d.Item3}, d: {d.Item1}");
 
@@ -192,14 +184,14 @@ public class Day13
                 d = extended_euclidean(game2.buttons.a.Item2, game2.buttons.b.Item2);
                 Console.WriteLine($"Initial inverse: x: {d.Item2}, y: {d.Item3}, d: {d.Item1}");
 
-                d.Item2 *= game2.prize.Item2 / GCD(game2.buttons.a.Item2, game2.buttons.b.Item2);
-                d.Item3 *= game2.prize.Item2 / GCD(game2.buttons.a.Item2, game2.buttons.b.Item2);
+                d.Item2 *= (long)(game2.prize.Item2 / GCD(game2.buttons.a.Item2, game2.buttons.b.Item2));
+                d.Item3 *= (long)(game2.prize.Item2 / GCD(game2.buttons.a.Item2, game2.buttons.b.Item2));
 
                 Console.WriteLine($"Adjusted for prize: x: {d.Item2}, y: {d.Item3}, d: {d.Item1}");
 
                 if (d.Item3 < 0)
                 {
-                    var adjuster = Math.Ceiling(-d.Item3 / game2.buttons.a.Item2);
+                    var adjuster = (long)Math.Ceiling((double)-d.Item3 / game2.buttons.a.Item2);
 
                     d.Item3 += game2.buttons.a.Item2 * adjuster;
                     d.Item2 -= game2.buttons.b.Item2 * adjuster;
@@ -207,7 +199,7 @@ public class Day13
 
                 if (d.Item2 < 0)
                 {
-                    var adjuster = Math.Ceiling(-d.Item2 / game2.buttons.b.Item2);
+                    var adjuster = (long)Math.Ceiling((double)-d.Item2 / game2.buttons.b.Item2);
 
                     d.Item2 += game2.buttons.b.Item2 * adjuster;
                     d.Item3 -= game2.buttons.a.Item2 * adjuster;
@@ -215,15 +207,45 @@ public class Day13
 
                 Console.WriteLine($"Made positive: x: {d.Item2}, y: {d.Item3}, d: {d.Item1}");
 
-                reducer = Math.Floor(d.Item2 / Math.Max(game2.buttons.b.Item1, game2.buttons.a.Item1));
-                d.Item2 -= game2.buttons.b.Item2 * reducer;
-                d.Item3 += game2.buttons.a.Item2 * reducer;
+                reducer = (long)Math.Floor(d.Item2 / (game2.buttons.b.Item2 / GCD(game2.buttons.a.Item2, game2.buttons.b.Item2)));
+                d.Item2 -= (long)(game2.buttons.b.Item2 / GCD(game2.buttons.a.Item2, game2.buttons.b.Item2)) * reducer;
+                d.Item3 += (long)(game2.buttons.a.Item2 / GCD(game2.buttons.a.Item2, game2.buttons.b.Item2)) * reducer;
 
                 Console.WriteLine($"Reduced A: x: {d.Item2}, y: {d.Item3}, d: {d.Item1}");
-
-                if (d.Item2 == APresses && d.Item3 == BPresses)
+                
+                for (var x = 0; x < 100000; x++)
                 {
-                    totalTokens2 += 3 * APresses + BPresses;
+                    var gcdForY = GCD(game2.buttons.a.Item1, game2.buttons.b.Item1);
+                    var gcdForX = GCD(game2.buttons.a.Item2, game2.buttons.b.Item2);
+                    
+                    double y =  (APresses - d.Item2 + x * (game2.buttons.b.Item1 / gcdForY)) / (game2.buttons.b.Item2 / gcdForX);
+                   
+                    
+
+                   if (Math.Abs(d.Item2 + y * (game2.buttons.b.Item2 / GCD(game2.buttons.a.Item2, game2.buttons.b.Item2)) - (APresses + x * (game2.buttons.b.Item1 / GCD(game2.buttons.a.Item1, game2.buttons.b.Item1)))) < 0.1 &&
+                       Math.Abs(d.Item3 - y * (game2.buttons.a.Item2 / GCD(game2.buttons.a.Item2, game2.buttons.b.Item2)) - (BPresses - x * (game2.buttons.a.Item1 / GCD(game2.buttons.a.Item1, game2.buttons.b.Item1)))) < 0.1)
+                   {
+                       Console.WriteLine($"y: {y}, x: {x}");
+                       Console.WriteLine($"new solutions: A Presses: {d.Item2 + y * (game2.buttons.b.Item2 / GCD(game2.buttons.a.Item2, game2.buttons.b.Item2))}," +
+                                        $" B Presses: {d.Item3 - y * (game2.buttons.a.Item2 / GCD(game2.buttons.a.Item2, game2.buttons.b.Item2))}");
+                      
+                      Console.WriteLine($"solutions check: A Presses: {APresses + x * (game2.buttons.b.Item1 / GCD(game2.buttons.a.Item1, game2.buttons.b.Item1))}, " +
+                                        $"B Presses: {BPresses - x * (game2.buttons.a.Item1 / GCD(game2.buttons.a.Item1, game2.buttons.b.Item1))}");
+                       
+                       
+                       totalTokens2 += (long)(3 * (d.Item2 + y * (game2.buttons.b.Item2 / GCD(game2.buttons.a.Item2, game2.buttons.b.Item2))) +
+                                       (d.Item3 - y * (game2.buttons.a.Item2 / GCD(game2.buttons.a.Item2, game2.buttons.b.Item2))));
+                       
+                       Console.WriteLine($"Currenty Tokens: {totalTokens2}");
+
+                       break;
+                   }
+
+                   if (d.Item3 - y * (game2.buttons.a.Item2 / GCD(game2.buttons.a.Item2, game2.buttons.b.Item2)) < 0 || BPresses - x * (game2.buttons.a.Item1 / GCD(game2.buttons.a.Item1, game2.buttons.b.Item1)) < 0)
+                   {
+                       Console.WriteLine($"Currenty Tokens: {totalTokens2}");
+                       break;
+                   }
                 }
             }
             else
@@ -235,19 +257,19 @@ public class Day13
         Console.WriteLine($"Total Tokens: {totalTokens2}");
     }
     
-    public static int GCD(int p, int q)
+    public static double GCD(long p, long q)
     {
         if(q == 0)
         {
             return p;
         }
 
-        int r = p % q;
+        long r = p % q;
 
         return GCD(q, r);
     }
 
-    public static (int gcd, double x, double y) extended_euclidean(int a, int b)
+    public static (long gcd, long x, long y) extended_euclidean(long a, long b)
     {
         if (b == 0)
         {
@@ -256,8 +278,8 @@ public class Day13
         
         var (gcd, x1, y1) = extended_euclidean(b, a % b);
 
-        double x = y1;
-        double y = x1 - (a / b) * y1;
+        long x = y1;
+        long y = x1 - (a / b) * y1;
         
         return (gcd, x, y);
     }

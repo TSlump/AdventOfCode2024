@@ -3,6 +3,7 @@ using AdventOfCode2024.Days.Day10;
 using AdventOfCode2024.Days.Day11;
 using AdventOfCode2024.Days.Day12;
 using AdventOfCode2024.Days.Day13;
+using AdventOfCode2024.Days.Day15;
 using AdventOfCode2024.Days.Day2;
 using AdventOfCode2024.Days.Day3;
 using AdventOfCode2024.Days.Day4;
@@ -41,5 +42,8 @@ Console.WriteLine("\nDay 12\n");
 //Day12.Run();
 
 Console.WriteLine("\nDay 13\n");
-Day13.RunPartOne();
-Day13.RunPartTwo();
+//Day13.RunPartOne();
+//Day13.RunPartTwo();
+
+Console.WriteLine("\nDay 15\n");
+Day15.RunPartOne();
