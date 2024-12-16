@@ -1,6 +1,4 @@
-using System.Collections;
-
-namespace AdventOfCode2024.Days.Day15;
+namespace AdventOfCode24.Days.Day15;
 
 public class Day15
 {
@@ -11,264 +9,228 @@ public class Day15
 
         if (File.Exists(filePath))
         {
-            input  = File.ReadAllLines(filePath);
+            input = File.ReadAllLines(filePath);
         }
         else
         {
             Console.WriteLine("File not found");
         }
 
-        var grid = new string[input.Length,input[0].Length];
 
-        for (var y = 0; y < input.Length; y++)
+        var breaker = 0;
+        for (int i = 0; i < input.Length; i++)
         {
-            for (var x = 0; x < input[y].Length; x++)
+            if (input[i] == "")
             {
-                grid[y, x] = input[y][x].ToString();
+                breaker = i;
             }
         }
-
-        PrintGrid(grid);
-
-        (int y, int x) start = (grid.GetLength(0) - 2, 1);
-        (int y, int x) finish = (1, grid.GetLength(1) - 2);
         
-        Console.WriteLine($"Start: {start}, Finish: {finish}, Start: {grid[start.Item1, start.Item2]}, Finish: {grid[finish.Item1, finish.Item2]}");
+        (int y, int x) robotCoords = (-1, -1);
         
-        var (visitedGrid, solutionPaths) = BreadthFirstSearch(grid, start, finish);
-        
-        Console.WriteLine($"Score: {visitedGrid[finish.y, finish.x].score}");
+        var gridArray = input.Take(breaker).ToArray();
 
-        for (var y = 0; y < input.Length; y++)
+        var grid = new string[gridArray.Length, gridArray[0].Length];
+
+        for (int i = 0; i < grid.GetLength(0); i++)
         {
-            for (var x = 0; x < input[y].Length; x++)
+            for (int j = 0; j < grid.GetLength(1); j++)
             {
-                if (visitedGrid[y, x].wasVisited)
+                grid[i, j] = gridArray[i][j].ToString();
+
+                if (gridArray[i][j] == '@')
                 {
-                    Console.Write(visitedGrid[y, x].score + "\t");
+                    robotCoords = (i, j);
                 }
-                else
-                {
-                    Console.Write("#\t");
-                }
-                
             }
-            Console.WriteLine();
+        }
+        
+        var movementsArray = input.Skip(breaker + 1).ToArray();
+
+        var movements = "";
+        
+        foreach (var movement in movementsArray)
+        {
+            movements += movement;
+        }
+
+        for (int i = 0; i < grid.GetLength(0); i++)
+        {
+            for (int j = 0; j < grid.GetLength(1); j++)
+            {
+                Console.Write(grid[i,j]);
+            }
             Console.WriteLine();
         }
         
-        //var tiles = ReverseBreadthFirstSearch(visitedGrid, start, finish);
+        Console.WriteLine(movements);
         
-        Console.WriteLine($"Number solutions: {solutionPaths.Count}");
         
-        List<(int y, int x)> visited = new List<(int y, int x)>();
-
-        foreach (var solutionPath in solutionPaths)
+        // # is wall
+        // O is box
+        // X is immovable box
+        // @ is robot
+        // . is space
+        
+        SearchGridFromCorners(grid);
+        
+        for (int i = 0; i < grid.GetLength(0); i++)
         {
-            foreach (var node in solutionPath.Item1)
+            for (int j = 0; j < grid.GetLength(1); j++)
             {
-                if (solutionPath.score == visitedGrid[finish.y, finish.x].score && !visited.Contains(node))
-                {
-                    visited.Add(node);
-                }
+                Console.Write(grid[i,j]);
+            }
+            Console.WriteLine();
+        }
+        
+        Console.WriteLine($"Grid Size: {grid.GetLength(0)}, {grid.GetLength(1)}");
+        
+        Console.WriteLine($"Robot Coordinates: {robotCoords.y}, {robotCoords.x}");
+
+        foreach (var movement in movements)
+        {
+            var direction = GetDirection(movement);
+            
+            var boxesPushed = 0;
+            
+            //Console.WriteLine($"Direction: {direction.y}, {direction.x}, Item in that direction: {grid[robotCoords.y + (boxesPushed + 1) * direction.y, robotCoords.x + (boxesPushed + 1) * direction.x]}");
+
+            while (grid[robotCoords.y + (boxesPushed + 1) * direction.y, robotCoords.x + (boxesPushed + 1) * direction.x] == "O")
+            {
                 
+                //Console.WriteLine(($"Looking +{boxesPushed}: {grid[robotCoords.y + (boxesPushed + 1) * direction.y, robotCoords.x + (boxesPushed + 1) * direction.x]}"));
+                boxesPushed += 1;
             }
             
-            Console.WriteLine($"Solution path: {solutionPath.Item1.Count}, Score: {solutionPath.score}");
-            Console.WriteLine(string.Join(" ", solutionPath.Item1));
-        }
-        
-        Console.WriteLine($"Number solution nodes: {visited.Count}");
-        
-        Console.WriteLine($"Tiles: ");
-    }
-
-    public static void PrintGrid(string[,] grid)
-    {
-        for (var y = 0; y < grid.GetLength(0); y++)
-        {
-            for (var x = 0; x < grid.GetLength(1); x++)
+            //Console.WriteLine(($"Blocked by: {grid[robotCoords.y + (boxesPushed + 1) * direction.y, robotCoords.x + (boxesPushed + 1) * direction.x]}"));
+    
+            if (grid[robotCoords.y + (boxesPushed + 1) * direction.y, robotCoords.x + (boxesPushed + 1) * direction.x] == ".")
             {
-                Console.Write(grid[y, x]);
-            }
-            Console.WriteLine();
-        }
-    }
-
-    public static ((bool wasVisited, long score)[,], List<(List<(int, int)>, long score)>) BreadthFirstSearch(string[,] grid, (int y, int x) start, (int y, int x) finish)
-    {
-        Queue<((int y, int x) coords, long score, (int y, int x) direction, List<(int y, int x)> path)> queue = new();
-        
-        var visited = new (bool wasVisited, long score)[grid.GetLength(0), grid.GetLength(1)];
-        
-        var solutionPaths = new List<(List<(int, int)>, long score)>();
-        
-        visited[start.y, start.x] = (true, 0);
-        
-        queue.Enqueue((start, 0, (0, 1), []));
-
-        while (queue.Count > 0)
-        {
-            var (currentCoords, currentScore, currentDirection, currentPath) = queue.Dequeue();
-            
-            //Console.WriteLine($"CurrentCoords: {currentCoords}, CurrentScore: {currentScore}, Direction: {currentDirection}, Path: {string.Join(' ', currentPath)}");
-
-            if (currentCoords == finish)
-            {
-                var amendedPath = currentPath.ToList();
-                amendedPath.Add((currentCoords.y, currentCoords.x));
+                grid[robotCoords.y, robotCoords.x] = ".";
+                grid[robotCoords.y + direction.y, robotCoords.x + direction.x] = "@";
                 
-                solutionPaths.Add((amendedPath, currentScore));
-                continue;
-            }
-
-            if (grid[currentCoords.y + currentDirection.y, currentCoords.x + currentDirection.x] != "#")
-            {
-                if (!visited[currentCoords.y + currentDirection.y, currentCoords.x + currentDirection.x].wasVisited ||
-                    (visited[currentCoords.y + currentDirection.y, currentCoords.x + currentDirection.x].wasVisited &&
-                     visited[currentCoords.y + currentDirection.y, currentCoords.x + currentDirection.x].score >=
-                     currentScore - 1000))
+                if (boxesPushed > 0)
                 {
-                    visited[currentCoords.y + currentDirection.y, currentCoords.x + currentDirection.x] =
-                        (true, currentScore + 1);
+                    for (int i = boxesPushed + 1; i > 1; i--)
+                    {
+                        grid[robotCoords.y + i * direction.y, robotCoords.x + i * direction.x] = "O";
 
-                    var amendedPath = currentPath.ToList();
-                    amendedPath.Add((currentCoords.y, currentCoords.x));
-                    
-                    //Console.WriteLine($"New coords: {(currentCoords.y + currentDirection.y, currentCoords.x + currentDirection.x)}, currentScore: {currentScore + 1}, direction: {currentDirection}, path: {string.Join(' ', amendedPath)}");
-                    
-                    queue.Enqueue(((currentCoords.y + currentDirection.y, currentCoords.x + currentDirection.x), currentScore + 1, currentDirection, amendedPath));
+                        if (IsImmovable(grid, (robotCoords.y + i * direction.y, robotCoords.x + i * direction.x)))
+                        {
+                            grid[robotCoords.y + i * direction.y, robotCoords.x + i * direction.x] = "X";
+                        }
+                    }
                 }
-            }
-
-            (int y, int x)[] newDirections;
-
-            if (currentDirection.y != 0)
-            {
-                newDirections = [(0, 1), (0, -1)];
+                
+                robotCoords.y += direction.y;
+                robotCoords.x += direction.x;
             }
             else
             {
-                newDirections = [(1, 0), (-1, 0)];
+                //Console.WriteLine("Blocked");
             }
+            
+            // for (int i = 0; i < grid.GetLength(0); i++)
+            // {
+            //     for (int j = 0; j < grid.GetLength(1); j++)
+            //     {
+            //         Console.Write(grid[i,j]);
+            //     }
+            //     Console.WriteLine();
+            // }
+        }
 
-            foreach (var newDirection in newDirections)
+
+        long sumGPS = 0;
+        
+        for (int i = 0; i < grid.GetLength(0); i++)
+        {
+            for (int j = 0; j < grid.GetLength(1); j++)
             {
-                if (grid[currentCoords.y + newDirection.y, currentCoords.x + newDirection.x] != "#")
+                Console.Write(grid[i,j]);
+
+                if (grid[i, j] == "O" || grid[i, j] == "X")
                 {
-                    if (!visited[currentCoords.y + newDirection.y, currentCoords.x + newDirection.x].wasVisited ||
-                        (visited[currentCoords.y + newDirection.y, currentCoords.x + newDirection.x].wasVisited &&
-                         visited[currentCoords.y + newDirection.y, currentCoords.x + newDirection.x].score >=
-                         currentScore + 1000))
-                    {
-                        visited[currentCoords.y + newDirection.y, currentCoords.x + newDirection.x] =
-                            (true, currentScore + 1001);
-                    
-                        var amendedPath = currentPath.ToList();
-                        amendedPath.Add((currentCoords.y, currentCoords.x));
-                        
-                        //Console.WriteLine($"New coords: {(currentCoords.y + newDirection.y, currentCoords.x + newDirection.x)}, currentScore: {currentScore + 1001}, direction: {newDirection}, path: {string.Join(' ', amendedPath)}");
-                        
-                        queue.Enqueue(((currentCoords.y + newDirection.y, currentCoords.x + newDirection.x), currentScore + 1001, newDirection, amendedPath));
-                    }
+                    sumGPS += 100 * i + j;
                 }
             }
+            Console.WriteLine();
         }
         
-        return (visited, solutionPaths);
+        
+        Console.WriteLine($"GPS: {sumGPS}");
+        
+    }
+    
+
+    public static bool IsImmovable(string[,] grid, (int y, int x) position)
+    {
+        var directions = new (int y, int x)[] { (-1, 0), (0, 1), (1, 0), (0, -1) };
+
+        for (int i = 0; i < 4; i++)
+        {
+            if ((grid[position.y + directions[i].y, position.x + directions[i].x] == "X" ||
+                 grid[position.y + directions[i].y, position.x + directions[i].x] == "#") &&
+                (grid[position.y + directions[(i + 1) % 4].y, position.x + directions[(i + 1) % 4].x] == "X" ||
+                grid[position.y + directions[(i + 1) % 4].y, position.x + directions[(i + 1) % 4].x] == "#"))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    public static long ReverseBreadthFirstSearch((bool wasVisited, long score)[,] prevVisited, (int y, int x) start, (int y, int x) finish)
+    public static void SearchGridFromCorners(string[,] grid)
     {
-        long tiles = 0;
-
-        Queue<(int y, int x)> queue = new();
+        int rows = grid.GetLength(0);
+        int cols = grid.GetLength(1);
+        var visited = new HashSet<(int, int)>();
+        var directions = new (int y, int x)[] { (0, 1), (1, 0), (0, -1), (-1, 0) };
         
-        bool[,] newVisited = new bool[prevVisited.GetLength(0), prevVisited.GetLength(1)];
+        var queue = new Queue<(int, int)>();
+        queue.Enqueue((1, 1));
+        queue.Enqueue((1, cols - 2));
+        queue.Enqueue((rows - 2, 1));
+        queue.Enqueue((rows - 2, cols - 2));
         
-        newVisited[finish.y, finish.x] = true;
+        visited.Add((1,1));
+        visited.Add((1, cols - 2));
+        visited.Add((rows - 2, 1));
+        visited.Add((rows - 2, cols - 2));
         
-        queue.Enqueue((finish.y, finish.x));
-
-        tiles += 1;
-
         while (queue.Count > 0)
         {
             var (y, x) = queue.Dequeue();
-            
-            Console.WriteLine($"Current: {y}, {x}");
 
-            if ((y, x) == start)
+            if (grid[y, x] == "O" && IsImmovable(grid, (y, x)))
+            //if (grid[y, x] == "O")
             {
-                continue;
+                grid[y, x] = "X";
             }
             
-            var directions = new (int y, int x)[]{(-1, 0), (1, 0), (0, -1), (0, 1)};
-
             foreach (var direction in directions)
             {
-                var score = prevVisited[y, x].score;
                 
-                Console.WriteLine($"Score: {score}, Direction: {direction.y}, {direction.x}");
-                
-                if (!newVisited[y + direction.y, x + direction.x] && prevVisited[y + direction.y, x + direction.x].wasVisited)
+                if (!visited.Contains((y + direction.y, x + direction.x)) && grid[y + direction.y, x + direction.x] != "#")
                 {
-                    Console.WriteLine($"Not visited, viewed score: {prevVisited[y + direction.y, x + direction.x].score}");
+                    queue.Enqueue((y + direction.y, x + direction.x));
                     
-                    if (prevVisited[y + direction.y, x + direction.x].score + 1 == score ||
-                        prevVisited[y + direction.y, x + direction.x].score + 1001 == score)
-                    {
-                        newVisited[y + direction.y, x + direction.x] = true;
-                        
-                        queue.Enqueue((y + direction.y, x + direction.x));
-
-                        tiles += 1;
-                    }
-                    else
-                    {
-                        (int y, int x) doubleDirection = (direction.y * 2, direction.x * 2);
-                        
-                        (int y, int x)[] newDirections;
-                        
-                        if (direction.y != 0)
-                        {
-                            newDirections = [(0, 1), (0, -1)];
-                        }
-                        else
-                        {
-                            newDirections = [(1, 0), (-1, 0)];
-                        }
-
-                        try
-                        {
-                            if (!newVisited[y + doubleDirection.y, x + doubleDirection.x] &&
-                                prevVisited[y + doubleDirection.y, x + doubleDirection.x].wasVisited &&
-                                (y, x) != finish)
-                            {
-                                Console.WriteLine(
-                                    $"Not visited, viewed score: {prevVisited[y + doubleDirection.y, x + doubleDirection.x].score}");
-
-                                if (prevVisited[y + doubleDirection.y, x + doubleDirection.x].score + 2 == score ||
-                                    prevVisited[y + doubleDirection.y + newDirections[0].y, x + doubleDirection.x + newDirections[0].x].score + 3 == score ||
-                                    prevVisited[y + doubleDirection.y + newDirections[1].y, x + doubleDirection.x + newDirections[1].x].score + 3 == score)
-                                {
-                                    newVisited[y + doubleDirection.y, x + doubleDirection.x] = true;
-        
-                                    queue.Enqueue((y + doubleDirection.y, x + doubleDirection.x));
-        
-                                    tiles += 2;
-                                }
-                            }
-                        }
-                        catch
-                        {
-                            // Ignored
-                        }
-                    }
+                    visited.Add((y + direction.y, x + direction.x));
                 }
             }
         }
-        
-        return tiles;
+    }
+
+    public static (int y, int x) GetDirection(char direction)
+    {
+        return direction switch
+        {
+            '>' => (0, 1),
+            '^' => (-1, 0),
+            '<' => (0, -1),
+            'v' => (1, 0),
+            _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
+        };
     }
 }
