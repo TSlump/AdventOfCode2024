@@ -283,4 +283,82 @@ public class Day13
         
         return (gcd, x, y);
     }
+
+    public static void LineIntersection()
+    {
+        var filePath = "Days/Day13/Day13Input.txt";
+        string[] input = [];
+
+        if (File.Exists(filePath))
+        {
+            input = File.ReadAllLines(filePath);
+        }
+        else
+        {
+            Console.WriteLine("File not found");
+        }
+
+        var games = new List<((double x, double y) prize, ((double x, double y) a, (double x, double y) b) buttons)>();
+
+        for (var i = 0; i < (input.Length + 1) / 4; i++)
+        {
+            var splitA = input[4 * i].Split('+');
+            var a = (Convert.ToDouble(splitA[1].Split(',')[0]), Convert.ToDouble(splitA[2]));
+
+            var splitB = input[4 * i + 1].Split('+');
+            var b = (Convert.ToDouble(splitB[1].Split(',')[0]), Convert.ToDouble(splitB[2]));
+
+            var splitPrize = input[4 * i + 2].Split('=');
+            var prize = (Convert.ToInt64(splitPrize[1].Split(',')[0]) + 10000000000000,
+               Convert.ToInt64(splitPrize[2]) + 10000000000000);
+            // var prize = (Convert.ToDouble(splitPrize[1].Split(',')[0]),
+             //    Convert.ToDouble(splitPrize[2]));
+
+            games.Add((prize, (a, b)));
+        }
+        
+        Console.WriteLine();
+        Console.WriteLine();
+
+        var tokens = 0.0;
+
+        foreach (var game in games)
+        {
+            Console.WriteLine($"Prize: ({game.prize.x}, {game.prize.y})");
+            Console.WriteLine($"  Buttons:");
+            Console.WriteLine($"    A: ({game.buttons.a.x}, {game.buttons.a.y})");
+            Console.WriteLine($"    B: ({game.buttons.b.x}, {game.buttons.b.y})");
+            Console.WriteLine();
+            
+            var prize = game.prize;
+            var a = game.buttons.a;
+            var b = game.buttons.b;
+
+            var c = prize.y - (b.y / b.x) * prize.x;
+
+            var x = c / (a.y / a.x - b.y / b.x);
+
+            var y = (a.y / a.x) * x;
+            
+            Console.WriteLine($"    Intercept: ({x}, {y})");
+
+            var APresses = x / a.x;
+            var BPresses = (prize.x - x) / b.x;
+            
+            Console.WriteLine($"  A Presses: {APresses}");
+            Console.WriteLine($"  B Presses: {BPresses}");
+            Console.WriteLine();
+
+            var roundedAPresses = Math.Round(APresses);
+            var roundedBPresses = Math.Round(BPresses);
+            
+            if (Math.Abs(roundedAPresses - APresses) < 0.001 && Math.Abs(roundedBPresses - BPresses) < 0.001)
+            {
+                Console.WriteLine($"Tokens Added !!");
+                tokens += 3 * Math.Round(APresses) + Math.Round(BPresses);
+            }
+        }
+        
+        Console.WriteLine($"Total Tokens: {tokens}");
+    }
 }

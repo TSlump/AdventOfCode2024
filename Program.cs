@@ -16,7 +16,7 @@ using AdventOfCode2024.Days.Day9;
 
 Console.WriteLine("Advent of Code-2024 \n");
 
-var day = 15;
+var day = 13;
 
 switch (day)
 {
@@ -88,8 +88,9 @@ switch (day)
     
     case 13:
         Console.WriteLine("\nDay 13\n");
-        Day13.RunPartOne();
-        Day13.RunPartTwo();
+        //Day13.RunPartOne();
+        //Day13.RunPartTwo();
+        Day13.LineIntersection();
         break;
     
     case 14:
