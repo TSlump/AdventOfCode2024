@@ -8,14 +8,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3ab70836-6a92-42d7-885a-cc4296e77e7a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Days/Day13/Day13TestInput2.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Days/Day15/Day15.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Days/Day15/Day15Input.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Days/Day15/Day15TestInput.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Days/Day15/Day15TestInput2.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Days/Day15/Day15TestInput3.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AdventOfCode2024.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/AdventOfCode2024.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Days/Day13/Day13.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Days/Day13/Day13.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.AdventOfCode2024/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.AdventOfCode2024/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Days/Day17/Day17.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Days/Day17/Day17.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Program.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -41,6 +35,19 @@
     &quot;accountId&quot;: &quot;bfe9c60e-6e45-4e21-99bd-e37237c56c66&quot;
   }
 }</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/bin/Debug/net8.0/AdventOfCode2024.runtimeconfig.json" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/Downloads/AdventOfCode/AdventOfCode/Days/Day11/Day11.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/Downloads/AdventOfCode/AdventOfCode/Days/Day6/Day6.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/Downloads/AdventOfCode/AdventOfCode/Days/Day6/Guard.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/Downloads/AdventOfCode/AdventOfCode/Days/Day7/Day7.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/Downloads/AdventOfCode/AdventOfCode/Days/Day8/Day8.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/Downloads/AdventOfCode/AdventOfCode/Days/Day9/Day9.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/Downloads/AdventOfCode/AdventOfCode/Program.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/Downloads/Day14/Day14.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/Downloads/Day14/Robot.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/Downloads/Day15/Day15.cs" root0="SKIP_HIGHLIGHTING" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
 }</component>
@@ -101,6 +108,11 @@
       <workItem from="1734011050148" duration="13261000" />
       <workItem from="1734087165229" duration="6456000" />
       <workItem from="1734098433840" duration="35839000" />
+      <workItem from="1734364670460" duration="34534000" />
+      <workItem from="1734537471907" duration="641000" />
+      <workItem from="1734538122250" duration="476000" />
+      <workItem from="1734538606297" duration="471000" />
+      <workItem from="1734539169937" duration="1870000" />
     </task>
     <servers />
   </component>
@@ -109,7 +121,10 @@
   </component>
   <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
   <component name="VcsManagerConfiguration">
-    <option name="LOCAL_CHANGES_DETAILS_PREVIEW_SHOWN" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>
