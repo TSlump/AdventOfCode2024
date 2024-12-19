@@ -8,8 +8,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3ab70836-6a92-42d7-885a-cc4296e77e7a" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Days/Day19/Day19.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Days/Day19/Day19Input.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Days/Day19/Day19TestInput.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.AdventOfCode2024/.idea/projectSettingsUpdater.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.AdventOfCode2024/.idea/projectSettingsUpdater.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.AdventOfCode2024/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.AdventOfCode2024/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Days/Day17/Day17.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Days/Day17/Day17.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AdventOfCode2024.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/AdventOfCode2024.csproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Program.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -113,6 +117,8 @@
       <workItem from="1734538122250" duration="476000" />
       <workItem from="1734538606297" duration="471000" />
       <workItem from="1734539169937" duration="1870000" />
+      <workItem from="1734550538714" duration="7974000" />
+      <workItem from="1734600163695" duration="4708000" />
     </task>
     <servers />
   </component>
