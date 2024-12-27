@@ -31,11 +31,35 @@ public class Day23
             
             nodeDict[nodes[0]].Add(nodes[1]);
         }
+        
+        var fullNodeDict = new Dictionary<string, HashSet<string>>();
 
-        foreach (var kvp in nodeDict)
+        foreach (var line in input)
+        {
+            var nodes = line.Split('-');
+
+            if (!fullNodeDict.ContainsKey(nodes[0]))
+            {
+                fullNodeDict[nodes[0]] = [];
+            }
+
+            if (!fullNodeDict.ContainsKey(nodes[1]))
+            {
+                fullNodeDict[nodes[1]] = [];
+            }
+            
+            fullNodeDict[nodes[0]].Add(nodes[1]);
+            fullNodeDict[nodes[1]].Add(nodes[0]);
+        }
+        
+        fullNodeDict = fullNodeDict.OrderByDescending(x => x.Value.Count).ToDictionary(x => x.Key, x => x.Value);
+
+        foreach (var kvp in fullNodeDict)
         {
             Console.WriteLine($"{kvp.Key}: {string.Join(",", kvp.Value)}");
         }
+        
+        Console.WriteLine($"Node Count: {fullNodeDict.Count}");
 
         var tripleCounter = 0;
         
@@ -63,46 +87,15 @@ public class Day23
         
         Console.WriteLine(tripleCounter);
         
-        foreach (var kvp in nodeDict)
-        {
-            if (kvp.Value.Count > 10)
-            {
-                var nodeGroups = GetNodeGroups(kvp.Value);
-                
-                foreach (var nodeGroup in nodeGroups)
-                {
-                    var isGroup = true;
-
-                    var nodePairs = GetNodePairs(nodeGroup);
-
-                    foreach (var nodePair in nodePairs)
-                    {
-                        if (nodeDict.TryGetValue(nodePair.Item1, out var value))
-                        {
-                            if (value.Contains(nodePair.Item2))
-                            {
-                               // Ignored 
-                            }
-                            else
-                            {
-                                isGroup = false;
-                            }
-                        }
-                        else
-                        {
-                            isGroup = false;
-                        }
-                    }
-
-
-                    if (isGroup)
-                    {
-                        Console.WriteLine($"Group: {kvp.Key},{string.Join(",", nodeGroup)}");
-                        return;
-                    }
-                }
-            }
-        }
+        //var largestClique = FindLargestClique(fullNodeDict);
+        
+        var largestClique = new HashSet<string>();
+        BronKerbosch([], [..fullNodeDict.Keys], [], fullNodeDict, largestClique);
+        
+        largestClique = [..largestClique.OrderBy(x => x)];
+        
+        Console.WriteLine($"Large Clique Count: {largestClique.Count}");
+        Console.WriteLine(string.Join(",", largestClique));
     }
 
     public static List<(string, string)> GetNodePairs(List<string> nodes)
@@ -171,18 +164,82 @@ public class Day23
         return nodeGroups;
     }
 
-    public static List<string> GenerateCliques(Dictionary<string, List<string>> graph)
+    public static HashSet<string> FindLargestClique(Dictionary<string, HashSet<string>> graph)
     {
-        var greatestClique = new List<string>();
+        var greatestClique = new HashSet<string>();
+        
+        var potentialCliques = new Queue<HashSet<string>>();
 
-        foreach (var kvp in graph)
+        foreach (var kvp in graph.Where(kvp => kvp.Value.Count > 6))
         {
-            
+            potentialCliques.Enqueue([kvp.Key]);
+        }
+
+        while (potentialCliques.Count > 0)
+        {
+            var currentClique = potentialCliques.Dequeue();
+
+            foreach (var kvp in graph)
+            {
+                if (currentClique.Contains(kvp.Key) || kvp.Value.Count < currentClique.Count)
+                {
+                    continue;
+                }
+
+                if (currentClique.All(node => AreConnected(node, kvp.Key, graph)))
+                {
+                    var newClique = new HashSet<string>(currentClique) { kvp.Key };
+
+                    potentialCliques.Enqueue(newClique);
+
+                    if (newClique.Count > greatestClique.Count)
+                    {
+                        greatestClique = newClique;
+
+                        Console.WriteLine($"New largest clique: {string.Join(",", greatestClique)}");
+                    }
+                }
+            }
         }
         
-        
-        
         return greatestClique;
+    }
+
+    public static bool AreConnected(string node1, string node2, Dictionary<string, HashSet<string>> graph)
+    {
+        return graph[node1].Contains(node2);
+    }
+    
+    public static void BronKerbosch(HashSet<string> currentClique, HashSet<string> candidates, HashSet<string> excluded, 
+        Dictionary<string, HashSet<string>> graph, HashSet<string> largestClique) 
+    {
+        if (candidates.Count == 0 && excluded.Count == 0)
+        {
+            if (currentClique.Count > largestClique.Count)
+            {
+                largestClique.Clear();
+                foreach (var node in currentClique)
+                    largestClique.Add(node);
+            }
+            return;
+        }
+        
+        foreach (var candidate in new HashSet<string>(candidates))
+        {
+            var newClique = new HashSet<string>(currentClique) { candidate };
+            
+            var neighbors = graph[candidate];
+            
+            BronKerbosch(
+                newClique,
+                [..candidates.Intersect(neighbors)],
+                [..excluded.Intersect(neighbors)],
+                graph,
+                largestClique);
+            
+            candidates.Remove(candidate);
+            excluded.Add(candidate);
+        }
     }
     
 }

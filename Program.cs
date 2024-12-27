@@ -26,7 +26,7 @@ using AdventOfCode24.Days.Day15;
 
 Console.WriteLine("Advent of Code-2024 \n");
 
-var day = 25;
+var day = 23;
 
 switch (day)
 {
