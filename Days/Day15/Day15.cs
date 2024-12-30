@@ -233,4 +233,193 @@ public class Day15
             _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
         };
     }
+
+    public static void RunPartTwo()
+    {
+        var filePath = "Days/Day15/Day15Input.txt";
+        string[] input = [];
+
+        if (File.Exists(filePath))
+        {
+            input = File.ReadAllLines(filePath);
+        }
+        else
+        {
+            Console.WriteLine("File not found");
+        }
+
+
+        var breaker = 0;
+        for (int i = 0; i < input.Length; i++)
+        {
+            if (input[i] == "")
+            {
+                breaker = i;
+            }
+        }
+        
+        (int y, int x) robotCoords = (-1, -1);
+        
+        var gridArray = input.Take(breaker).ToArray();
+
+        var grid = new string[gridArray.Length, 2 * gridArray[0].Length];
+
+        for (int i = 0; i < grid.GetLength(0); i++)
+        {
+            for (int j = 0; j < grid.GetLength(1) / 2; j++)
+            {
+                if (gridArray[i][j] == '@')
+                {
+                    robotCoords = (i, 2 * j);
+                    grid[i, 2 * j] = "@";
+                    grid[i, 2 * j + 1] = ".";
+                }
+                else if (gridArray[i][j] == '#' || gridArray[i][j] == '.')
+                {
+                    grid[i, 2 * j] = gridArray[i][j].ToString();
+                    grid[i, 2 * j + 1] = gridArray[i][j].ToString();
+                }
+                else if (gridArray[i][j] == 'O')
+                {
+                    grid[i, 2 * j] = "[";
+                    grid[i, 2 * j + 1] = "]";
+                }
+            }
+        }
+        
+        var movementsArray = input.Skip(breaker + 1).ToArray();
+
+        var movements = movementsArray.Aggregate("", (current, movement) => current + movement);
+
+        Console.WriteLine(movements);
+
+        foreach (var direction in movements.Select(GetDirection))
+        {
+            Console.WriteLine($"Direction: {direction.y}, {direction.x}");
+
+            switch (grid[robotCoords.y + direction.y, robotCoords.x + direction.x])
+            {
+                case ".":
+                    grid[robotCoords.y, robotCoords.x] = ".";
+                    grid[robotCoords.y + direction.y, robotCoords.x + direction.x] = "@";
+                    
+                    robotCoords.y += direction.y;
+                    robotCoords.x += direction.x;
+                    continue;
+                case "X":
+                case "#":
+                    continue;
+            }
+
+            var depth = 0;
+
+            var listOfFutureSpaces = new List<HashSet<(int y, int x)>> { new() };
+
+            listOfFutureSpaces[0].Add((robotCoords.y, robotCoords.x));
+
+            var isMovable = true;
+            
+            while (listOfFutureSpaces[depth].Count > 0)
+            {
+                listOfFutureSpaces.Add([]);
+                
+                depth++;
+                
+                foreach (var futureSpace in listOfFutureSpaces[depth - 1])
+                {
+                    if (grid[futureSpace.y + direction.y, futureSpace.x + direction.x] == "#" || grid[futureSpace.y + direction.y, futureSpace.x + direction.x] == "X")
+                    {
+                        Console.WriteLine("Wall found, breaking");
+                        isMovable = false;
+                        break;
+                    }
+                    
+                    Console.WriteLine($"Looking at: {grid[futureSpace.y + direction.y, futureSpace.x + direction.x]}");
+
+                    if (grid[futureSpace.y + direction.y, futureSpace.x + direction.x] == "[")
+                    {
+                        Console.WriteLine(" [ added");
+                        listOfFutureSpaces[depth].Add((futureSpace.y + direction.y, futureSpace.x + direction.x));
+
+                        if (IsVerticleDirection(direction))
+                        {
+                            Console.WriteLine($"Found vertical direction {direction.y}, {direction.x}");
+                            listOfFutureSpaces[depth].Add((futureSpace.y + direction.y, futureSpace.x + direction.x + 1));
+                        }
+                    }
+                    
+                    if (grid[futureSpace.y + direction.y, futureSpace.x + direction.x] == "]")
+                    {
+                        Console.WriteLine(" ] added ");
+                        listOfFutureSpaces[depth].Add((futureSpace.y + direction.y, futureSpace.x + direction.x));
+
+                        if (IsVerticleDirection(direction))
+                        {
+                            Console.WriteLine($"Found vertical direction {direction.y}, {direction.x}");
+                            listOfFutureSpaces[depth].Add((futureSpace.y + direction.y, futureSpace.x + direction.x - 1));
+                        }
+                    }
+                    
+                }
+
+                if (!isMovable)
+                {
+                    break;
+                }
+                
+                Console.WriteLine($"Current list of future spaces: {string.Join(", ", listOfFutureSpaces[depth])}");
+            }
+
+            for (int i = 0; i < listOfFutureSpaces.Count; i++)
+            {
+                Console.WriteLine($"Future spaces: (depth {i})  {string.Join(", ", listOfFutureSpaces[i])}");
+            }
+
+            if (isMovable)
+            {
+                for (int i = listOfFutureSpaces.Count - 1; i >= 0; i--)
+                {
+                    foreach (var futureSpace in listOfFutureSpaces[i])
+                    {
+                        grid[futureSpace.y + direction.y, futureSpace.x + direction.x] = grid[futureSpace.y, futureSpace.x];
+                        grid[futureSpace.y, futureSpace.x] = ".";
+                    }
+                }
+                
+                grid[robotCoords.y, robotCoords.x] = ".";
+                grid[robotCoords.y + direction.y, robotCoords.x + direction.x] = "@";
+                
+                robotCoords.y += direction.y;
+                robotCoords.x += direction.x;
+            }
+        }
+        
+        long sumGPS = 0;
+        
+        for (int i = 0; i < grid.GetLength(0); i++)
+        {
+            for (int j = 0; j < grid.GetLength(1); j++)
+            {
+                Console.Write(grid[i,j]);
+
+                if (grid[i, j] == "[")
+                {
+                    sumGPS += 100 * i + j;
+                }
+            }
+            Console.WriteLine();
+        }
+        
+        
+        Console.WriteLine($"GPS: {sumGPS}");
+    }
+
+    public static bool IsVerticleDirection((int y, int x) direction)
+    {
+        return direction switch
+        {
+            (1, 0) or (-1, 0) => true,
+            _ => false
+        };
+    }
 }
