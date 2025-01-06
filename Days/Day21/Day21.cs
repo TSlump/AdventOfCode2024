@@ -4,7 +4,7 @@ public class Day21
 {
     public static void Run()
     {
-        var filePath = "Days/Day21/Day21TestInput2.txt";
+        var filePath = "Days/Day21/Day21Input.txt";
         string[] input = [];
 
         if (File.Exists(filePath))
@@ -20,6 +20,8 @@ public class Day21
 
         foreach (var line in input)
         {
+            Console.WriteLine(line);
+            
             var moveSequence = CodeToNumericKeypad(line);
             
             Console.WriteLine(moveSequence);
@@ -40,6 +42,118 @@ public class Day21
         }
         
         Console.WriteLine($"Total complexity: {totalComplexity}");
+        
+        Console.WriteLine();
+        Console.WriteLine();
+    }
+
+    public static void RunPartTwo()
+    {
+        var filePath = "Days/Day21/Day21Input.txt";
+        string[] input = [];
+
+        if (File.Exists(filePath))
+        {
+            input = File.ReadAllLines(filePath);
+        }
+        else
+        {
+            Console.WriteLine("File not found");
+        }
+
+        long totalComplexity = 0;
+        
+        var foundSolutionsDict = new Dictionary<(string input, int level), long>();
+        
+        foreach (var line in input)
+        {
+            Console.WriteLine(line);
+            
+            var moveSequence = CodeToNumericKeypad(line);
+            
+            Console.WriteLine(moveSequence);
+
+            var totalLength = ComputeNextLength(moveSequence, 0, foundSolutionsDict);
+            
+            Console.WriteLine(totalLength);
+            
+            var complexity = totalLength * Convert.ToInt64(line.Split('A')[0]);
+            
+            Console.WriteLine($"{totalLength} * {Convert.ToInt64(line.Split('A')[0])} = {complexity}");
+            
+            totalComplexity += complexity;
+        }
+        
+        Console.WriteLine($"Total complexity: {totalComplexity}");
+        
+        Console.WriteLine();
+        Console.WriteLine();
+
+        foreach (var (kvp, length) in foundSolutionsDict)
+        {
+            //Console.WriteLine($"{kvp.input}: {kvp.level}: {length}");
+        }
+    }
+
+    public static long ComputeNextLength(string input, int level, Dictionary<(string input, int level), long> foundSolutionsDict)
+    {
+        if (foundSolutionsDict.ContainsKey((input, level)))
+        {
+            return foundSolutionsDict[(input, level)];
+        }
+
+        if (level == 25)
+        {
+            foundSolutionsDict[(input, level)] = input.Length;
+            
+            return input.Length;
+        }
+        
+        var sections = input.Split('A');
+
+        for (var i = 0; i < sections.Length - 1; i++)
+        {
+            sections[i] += "A";
+        }
+        
+        //Console.WriteLine(input);
+        
+        //Console.WriteLine(string.Join("", sections));
+        
+        
+        //Console.WriteLine(input);
+        
+        //Console.WriteLine(string.Join(',', sections));
+
+        long total = 0;
+        
+        var increments = new List<long>();
+        
+        //Console.WriteLine($"Input: {input}, Level: {level}");
+        //Console.WriteLine($"Sections: {string.Join(",", sections)}");
+
+        foreach (var section in sections)
+        {
+            if (foundSolutionsDict.ContainsKey((section, level)))
+            {
+                total += foundSolutionsDict[(section, level)];
+            }
+            else
+            {
+                var increment = ComputeNextLength(SequenceToDirectionalKeypad(section), level + 1, foundSolutionsDict);
+            
+                total += increment;
+                
+                foundSolutionsDict[(section, level)] = increment;
+            }
+        }
+        
+        //Console.WriteLine($"Input: {input}, Level: {level}, Total: {total}");
+        //Console.WriteLine($"Increments: {string.Join(",", increments)}");
+        
+        foundSolutionsDict[(input, level)] = total;
+        
+        return total;
     }
 
     public static string CodeToNumericKeypad(string code)
@@ -56,40 +170,86 @@ public class Day21
             
             var yDifference = targetCoords.y - currentCoords.y;
 
-            if (yDifference < 0)
+            if (currentCoords.y == 3 && targetCoords.x == 0)
             {
-                for (int i = 0; i < Math.Abs(yDifference); i++)
+                //  Up first
+                
+                if (yDifference < 0)
                 {
-                    moveSequence += "^";
+                    for (int i = 0; i < Math.Abs(yDifference); i++)
+                    {
+                        moveSequence += "^";
+                    }
+                }
+            
+                if (xDifference < 0)
+                { 
+                    for (int i = 0; i < Math.Abs(xDifference); i++)
+                    {
+                        moveSequence += "<";
+                    }
+                }
+            }
+            else if (currentCoords.x == 0 && targetCoords.y == 3)
+            {
+                // Right first
+                
+                if (xDifference > 0)
+                { 
+                    for (int i = 0; i < xDifference; i++)
+                    {
+                        moveSequence += ">";
+                    }
+                }
+                
+                if (yDifference > 0)
+                {
+                    for (int i = 0; i < yDifference; i++)
+                    {
+                        moveSequence += "v";
+                    } 
                 }
             }
 
-            if (xDifference > 0)
-            { 
-                for (int i = 0; i < xDifference; i++)
-                {
-                    moveSequence += ">";
-                }
-            }
-            
-            if (xDifference < 0)
-            { 
-                for (int i = 0; i < Math.Abs(xDifference); i++)
-                {
-                    moveSequence += "<";
-                }
-            }
-            
-            if (yDifference > 0)
+            else
             {
-                for (int i = 0; i < yDifference; i++)
+                
+                // Left first
+                
+                if (xDifference < 0)
+                { 
+                    for (int i = 0; i < Math.Abs(xDifference); i++)
+                    {
+                        moveSequence += "<";
+                    }
+                }
+                
+                if (yDifference < 0)
                 {
-                    moveSequence += "v";
-                } 
+                    for (int i = 0; i < Math.Abs(yDifference); i++)
+                    {
+                        moveSequence += "^";
+                    }
+                }
+                
+                if (yDifference > 0)
+                {
+                    for (int i = 0; i < yDifference; i++)
+                    {
+                        moveSequence += "v";
+                    } 
+                }
+
+                if (xDifference > 0)
+                { 
+                    for (int i = 0; i < xDifference; i++)
+                    {
+                        moveSequence += ">";
+                    }
+                }
             }
-            
+
             moveSequence += "A";
-
             currentCoords = targetCoords;
         }
         
@@ -129,34 +289,70 @@ public class Day21
         {
             (int y, int x) targetCoords = ConvertDirectionToCoords(c);
 
-            if (targetCoords.y > currentCoords.y)
+            if (currentCoords == (1, 0))
             {
-                moveSequence += "v";
-            }
-            
-            if (targetCoords.x > currentCoords.x)
-            {
-                for (int i = 0; i < targetCoords.x - currentCoords.x; i++)
+                // Right first
+                
+                if (targetCoords.x > currentCoords.x)
                 {
-                    moveSequence += ">";
+                    for (int i = 0; i < targetCoords.x - currentCoords.x; i++)
+                    {
+                        moveSequence += ">";
+                    }
+                }
+                
+                if (targetCoords.y < currentCoords.y)
+                {
+                    moveSequence += "^";
                 }
             }
-            
-            if (targetCoords.x < currentCoords.x)
+            else if (currentCoords.y == 0 && targetCoords.x == 0)
             {
-                for (int i = 0; i < Math.Abs(targetCoords.x - currentCoords.x); i++)
+                // Down first
+                
+                if (targetCoords.y > currentCoords.y)
                 {
-                    moveSequence += "<";
+                    moveSequence += "v";
+                }
+                
+                if (targetCoords.x < currentCoords.x)
+                {
+                    for (int i = 0; i < Math.Abs(targetCoords.x - currentCoords.x); i++)
+                    {
+                        moveSequence += "<";
+                    }
                 }
             }
-            
-            if (targetCoords.y < currentCoords.y)
+            else
             {
-                moveSequence += "^";
+                if (targetCoords.x < currentCoords.x)
+                {
+                    for (int i = 0; i < Math.Abs(targetCoords.x - currentCoords.x); i++)
+                    {
+                        moveSequence += "<";
+                    }
+                }
+                
+                if (targetCoords.y < currentCoords.y)
+                {
+                    moveSequence += "^";
+                }   
+                
+                if (targetCoords.y > currentCoords.y)
+                {
+                    moveSequence += "v";
+                }
+            
+                if (targetCoords.x > currentCoords.x)
+                {
+                    for (int i = 0; i < targetCoords.x - currentCoords.x; i++)
+                    {
+                        moveSequence += ">";
+                    }
+                }
             }
             
             moveSequence += "A";
-            
             currentCoords = targetCoords;
         }
         
